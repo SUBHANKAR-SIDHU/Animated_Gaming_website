@@ -1,4 +1,8 @@
 import { useRef, useState } from "react";
+import Button from "./Button";
+import { TiLocationArrow } from "react-icons/ti";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 function Hero() {
   const [currentIdx, setCurrentIdx] = useState(1);
@@ -16,13 +20,34 @@ function Hero() {
     setCurrentIdx(upcomingIdx);
   };
   const getvideoSrc = (index) => `videos/hero-${index}.mp4`;
+  useGSAP(()=>{
+    if(hasClicked){
+      gsap.set('#next-video',{visibility:'visible'})
+      gsap.to('#next-video',{
+        transformOrigin: 'center center',
+        scale:1,
+        width: "100%",
+        height:'100%',
+        duration:1,
+        ease:"power1.inOut",
+        onStart:()=>nextVideoRef.current.play()
+      })
+      gsap.from('#current-video',{
+        transformOrigin:"center center",
+        duration:1.5,
+        scale:0.5,
+        ease:"power1.inOut"
+      })
+    }
+
+  },{dependencies:[currentIdx],revertOnUpdate:true})
   return (
     <div className='relative h-dvh w-screen overflow-x-hidden'>
       <div
         id='video-frame'
         className='h-dvh relative z-10 w-screen overflow-x-hidden bg-blue-75 rounded-lg'>
         <div>
-          <div className='mask-clip-content absolute-center size-64 cursor-pointer absolute z-50 overflow-hidden rounded-lg'>
+          <div className='mask-clip-content absolute-center size-48 cursor-pointer absolute z-50 overflow-hidden rounded-lg'>
             <div
               onClick={handleminivdClick}
               className='origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100'>
@@ -32,7 +57,7 @@ function Hero() {
                 ref={nextVideoRef}
                 src={getvideoSrc(upcomingIdx)}
                 id='current-video'
-                className='origin-center size-64 object-cover scale-150 object-center '
+                className='origin-center size-48 object-cover scale-150 object-center '
                 onLoadedData={handleLoadingVideo}
               />
             </div>
@@ -43,11 +68,11 @@ function Hero() {
             loop
             muted
             id='next-video'
-            className='size-64 absolute-center absolute z-20 object-cover object-center invisible '
+            className='size-48 absolute-center absolute z-20 object-cover object-center invisible '
             onLoadedData={handleLoadingVideo}
           />
           <video
-            src={getvideoSrc(currentIdx === totalvideo - 2 ? 1 : currentIdx)}
+            src={getvideoSrc(currentIdx === totalvideo - 1 ? 1 : currentIdx)}
             loop
             autoPlay
             muted
@@ -64,13 +89,22 @@ function Hero() {
               redefi<b>n</b>
               <b>e</b>
             </h1>
-            <p className='mb-5 max-w-64 font-robert-regular text-blue-100'>
+            <p className='mb-5 max-w-48 text-sm font-robert-regular text-blue-100'>
               Enter the Metagame layer <br />
               Unleash the Play Economy
             </p>
+            <Button
+              title={"watch trailer"}
+              id={"watch-trailer"}
+              leftIcon={<TiLocationArrow />}
+              containerClass={"bg-yellow-300 flex-center gap-1"}
+            />
           </div>
         </div>
       </div>
+      <h1 className='absolute  bottom-5 right-5 text-black special-font hero-heading'>
+        G<b>a</b>ming
+      </h1>
     </div>
   );
 }
